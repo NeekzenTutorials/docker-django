@@ -1,0 +1,33 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: >
+      sh -c "
+      if [ ! -f manage.py ]; then
+        django-admin startproject myproject . &&
+        python manage.py migrate;
+      fi &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: secure_password
+
+volumes:
+  postgres_data:
