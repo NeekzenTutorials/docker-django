@@ -28,15 +28,8 @@ services:
         django-admin startproject myproject .;
       fi &&
       if [ -f myproject/settings.py ]; then
-        # Ajouter les imports en haut du fichier s'ils n'existent pas
-        grep -qxF 'import os' myproject/settings.py || sed -i '1iimport os' myproject/settings.py &&
-        grep -qxF 'from dotenv import load_dotenv; load_dotenv()' myproject/settings.py || sed -i '2ifrom dotenv import load_dotenv; load_dotenv()' myproject/settings.py &&
-        # Ajouter PROJECT_NAME s'il n'existe pas
-        grep -qxF 'PROJECT_NAME = os.getenv(\"NAME\", \"default\")' myproject/settings.py || \
-        sed -i '3iPROJECT_NAME = os.getenv(\"NAME\", \"default\")' myproject/settings.py &&
         # Ajouter ou modifier ALLOWED_HOSTS
-        sed -i \"s/^ALLOWED_HOSTS.*/ALLOWED_HOSTS = [f\\\"{PROJECT_NAME}.jrcan.dev\\\", \\\"localhost\\\", \\\"127.0.0.1\\\"]\"/\" myproject/settings.py || \
-        echo \"ALLOWED_HOSTS = [f\\\"{PROJECT_NAME}.jrcan.dev\\\", \\\"localhost\\\", \\\"127.0.0.1\\\"]\" >> myproject/settings.py;
+        sed -i \"s/^ALLOWED_HOSTS.*/ALLOWED_HOSTS = django.jrcan.dev myproject/settings.py || \
       fi &&
       python manage.py runserver 0.0.0.0:8000
       "
