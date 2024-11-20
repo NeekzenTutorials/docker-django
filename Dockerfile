@@ -13,3 +13,4 @@ EXPOSE 8000
 
 # Entrée du conteneur (géré dans docker-compose)
 CMD ["sh", "-c", "echo 'Entrée définie dans docker-compose'"]
+ 
