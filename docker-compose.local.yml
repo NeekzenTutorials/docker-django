@@ -1,27 +1,18 @@
-networks:
-  web:
-    external: true
-  lan:
-    external: false
-    name: lan_${NAME}
+version: '3.8'
 
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
     volumes:
       - ./app:/app
     ports:
-      - "8000:8000"  # Localhost
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
       - db
-    networks:
-      - web
-      - lan
     command: >
       sh -c "
       if [ ! -f manage.py ]; then
@@ -37,12 +28,6 @@ services:
       fi &&
       python manage.py runserver 0.0.0.0:8000
       "
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.${NAME}.entryPoints=websecure
-      - traefik.http.routers.${NAME}.rule=Host(`${NAME}.jrcan.dev`)
-      - traefik.http.routers.${NAME}.tls=true
-      - traefik.http.routers.${NAME}.tls.certresolver=myresolver
 
   db:
     image: postgres:latest
@@ -52,9 +37,13 @@ services:
       POSTGRES_USER: django_user
       POSTGRES_PASSWORD: secure_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  # Volume pour la base de données
     networks:
       - lan
+
+networks:
+  lan:
+    driver: bridge
 
 volumes:
   postgres_data:
